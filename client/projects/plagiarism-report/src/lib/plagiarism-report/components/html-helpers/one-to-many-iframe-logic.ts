@@ -34,6 +34,66 @@ function ready() {
 			elem.addEventListener('mouseenter', onMatchHover);
 			elem.addEventListener('mouseleave', onMatchHover);
 		});
+
+		initConversationsHandlers()
+	}
+
+	function initConversationsHandlers() {
+		var btnCreateConversationEle = document.createElement("BUTTON");
+		btnCreateConversationEle.innerText = "Start Conversation"
+		btnCreateConversationEle.id = "btn-create-conversation"
+		document.body.appendChild(btnCreateConversationEle);
+
+
+		var onSelection = function () {
+			var text = "";
+			console.log("selection was reached");
+			if (window.getSelection) {
+				text = window.getSelection().toString();
+			} else if (document["selection"] && document["selection"].type != "Control") {
+				text = document["selection"].createRange().text;
+			}
+			if (text) {
+				const sel = window.getSelection();
+				if (sel.rangeCount && sel.getRangeAt) {
+					btnCreateConversationEle.style.display = "block";
+
+					const range = sel.getRangeAt(0);
+					const clientRects = range.getClientRects()
+
+					btnCreateConversationEle.style.top = clientRects[clientRects.length - 1].top + window.scrollY + 50 + "px";
+				}
+			} else {
+				btnCreateConversationEle.style.display = "none";
+			}
+		};
+
+		document.onmouseup = document.onkeyup = document.onselectionchange = onSelection;
+		btnCreateConversationEle.onclick = function () {
+			// Get Selection
+			const sel = window.getSelection();
+			let range: Range;
+			if (sel.rangeCount && sel.getRangeAt) {
+				range = sel.getRangeAt(0);
+			}
+			if (range) {
+				sel.removeAllRanges();
+				sel.addRange(range);
+
+				var endPinElement = document.createElement("DIV");
+				endPinElement.classList.add("pin");
+				endPinElement.id = Date.now().toString();
+				endPinElement.onclick = () => { }
+				range.endContainer.parentElement.after(endPinElement);
+
+				var start = document.documentElement.innerHTML.trim().indexOf(endPinElement.id) + endPinElement.id.length + 2;
+				var end = start + endPinElement.innerHTML.trim().length;
+				console.log(`Start: ${start}`);
+				console.log(`End: ${end}`);
+				console.log(`text: ${sel.toString()}`);
+			}
+			btnCreateConversationEle.style.display = "none";
+		}
 	}
 
 	/**

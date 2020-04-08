@@ -25,7 +25,7 @@ export class OriginalComponent implements OnInit, OnDestroy {
 		private layoutService: LayoutMediaQueryService,
 		private matchService: MatchService,
 		private highlightService: HighlightService
-	) {}
+	) { }
 	get pages(): number[] {
 		return this.source && this.source.text.pages.startPosition;
 	}
@@ -86,6 +86,44 @@ export class OriginalComponent implements OnInit, OnDestroy {
 	}
 
 	/**
+ 	* Life-cycle method
+ 	* subscribe to:
+ 	* - report metadata and source document
+ 	* - view mode and content mode changes
+ 	* - matches from highlight service
+ 	* - layout changes
+ 	*/
+	ngOnInit() {
+		const { completeResult$, source$, viewMode$, contentMode$, sourcePage$ } = this.reportService;
+		const { originalTextMatches$, sourceTextMatches$, originalHtmlMatches$, sourceHtmlMatches$ } = this.matchService;
+		completeResult$.pipe(untilDestroy(this)).subscribe(completeResult => (this.completeResult = completeResult));
+		source$.pipe(untilDestroy(this)).subscribe(source => {
+			this.source = source;
+			sourcePage$.pipe(untilDestroy(this)).subscribe(page => (this.currentPage = +page));
+		});
+
+		viewMode$.pipe(untilDestroy(this)).subscribe(viewMode => (this.viewMode = viewMode));
+		viewMode$
+			.pipe(
+				untilDestroy(this),
+				distinctUntilChanged(),
+				switchMapTo(source$)
+			)
+			.subscribe(source => {
+				if (!source.html || !source.html.value) {
+					this.reportService.configure({ contentMode: 'text' });
+				}
+			});
+
+		contentMode$.pipe(untilDestroy(this)).subscribe(content => (this.contentMode = content));
+		originalTextMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.originalTextMatches = matches));
+		sourceTextMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.sourceTextMatches = matches));
+		originalHtmlMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.originalHtmlMatches = matches));
+		sourceHtmlMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.sourceHtmlMatches = matches));
+		this.layoutService.mediaAliases$.pipe(untilDestroy(this)).subscribe(queries => (this.activeMediaQueries = queries));
+	}
+
+	/**
 	 * updates the font size of the suspect text.
 	 * @param amount a decimal number between 0.5 and 4
 	 */
@@ -122,47 +160,10 @@ export class OriginalComponent implements OnInit, OnDestroy {
 		this.reportService.configure({ sourcePage: +event.currentPage });
 		this.highlightService.clear();
 	}
-	/**
-	 * Life-cycle method
-	 * subscribe to:
-	 * - report metadata and source document
-	 * - view mode and content mode changes
-	 * - matches from highlight service
-	 * - layout changes
-	 */
-	ngOnInit() {
-		const { completeResult$, source$, viewMode$, contentMode$, sourcePage$ } = this.reportService;
-		const { originalTextMatches$, sourceTextMatches$, originalHtmlMatches$, sourceHtmlMatches$ } = this.matchService;
-		completeResult$.pipe(untilDestroy(this)).subscribe(completeResult => (this.completeResult = completeResult));
-		source$.pipe(untilDestroy(this)).subscribe(source => {
-			this.source = source;
-			sourcePage$.pipe(untilDestroy(this)).subscribe(page => (this.currentPage = +page));
-		});
-
-		viewMode$.pipe(untilDestroy(this)).subscribe(viewMode => (this.viewMode = viewMode));
-		viewMode$
-			.pipe(
-				untilDestroy(this),
-				distinctUntilChanged(),
-				switchMapTo(source$)
-			)
-			.subscribe(source => {
-				if (!source.html || !source.html.value) {
-					this.reportService.configure({ contentMode: 'text' });
-				}
-			});
-
-		contentMode$.pipe(untilDestroy(this)).subscribe(content => (this.contentMode = content));
-		originalTextMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.originalTextMatches = matches));
-		sourceTextMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.sourceTextMatches = matches));
-		originalHtmlMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.originalHtmlMatches = matches));
-		sourceHtmlMatches$.pipe(untilDestroy(this)).subscribe(matches => (this.sourceHtmlMatches = matches));
-		this.layoutService.mediaAliases$.pipe(untilDestroy(this)).subscribe(queries => (this.activeMediaQueries = queries));
-	}
 
 	/**
 	 * Life-cycle method
 	 * empty for `untilDestroy` rxjs operator
 	 */
-	ngOnDestroy() {}
+	ngOnDestroy() { }
 }
