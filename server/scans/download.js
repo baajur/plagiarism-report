@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
-const bearerToken = "<ENTER COPYLEAKS API AUTHENTICATION TOKEN HERE>";
+const bearerToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhdG9yIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoiYmF5YW5hQGNvcHlsZWFrcy5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjRhNGFjMmIwLWQ1ZWQtNDYzNS1iMTM2LTk0NTI4MDQyN2UyOCIsInJlZnJlc2gtc2VjcmV0IjoiWVBBRUU5T3d0YmhjWk9SQUREL01aMmorZnkzTVpnR2JjcjRiUktidURRVT0iLCJleHAiOjE1ODY4Njk5NTUsImlzcyI6ImlkLmNvcHlsZWFrcy5jb20iLCJhdWQiOiJhcGktdjMuY29weWxlYWtzLmNvbSJ9.Q5Z7XXhx0y9wpcRWnp5n6r_ga7tb7MKqxeaYXQ_qgBU-EWPFcuCq3RRVwUdtSb0YhyQWy-GfI6zT_peJNnv-JXqT5FpbXTzfs7KfVcsXplI3qsmpKGtuowqXMnUq3iTydYbViSc1KouJ3gLYBaXv0M1u50d_Nikigwbkd6qGYuS9pVUIbDOHyY2vuysr_WVeWXhaCDFwfbZAH0NQo5mouCCXvuw8AXvYcmqvOsVl-Rg3cPG-C2q0jpUkrf9ebL1rlFDtuBlFlKVNXcjXm23zgxkdt7iEAtaVoWE5FdeffRAwXiAo-q786Ss67TwctuFkYzDZ-PL92W7ODukOZU_wgg";
 
 function ensureDirectoryExistence(filePath) {
 	var dirname = path.dirname(filePath);
@@ -25,7 +25,7 @@ async function downloadFile(url, path, token) {
 		res.body.on("error", err => {
 			reject(err);
 		});
-		fileStream.on("finish", function() {
+		fileStream.on("finish", function () {
 			resolve();
 		});
 	});

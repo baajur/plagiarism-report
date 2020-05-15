@@ -41,6 +41,7 @@ export enum MatchType {
 	minorChanges = 1,
 	relatedMeaning = 2,
 	none = 3,
+	conversation = 4
 }
 
 /**

@@ -38,6 +38,7 @@ function ready() {
 		initConversationsHandlers()
 	}
 
+	//#region conversations handlers
 	function initConversationsHandlers() {
 		var btnCreateConversationEle = document.createElement("BUTTON");
 		btnCreateConversationEle.innerText = "Start Conversation"
@@ -80,21 +81,25 @@ function ready() {
 				sel.removeAllRanges();
 				sel.addRange(range);
 
-				var endPinElement = document.createElement("DIV");
+				var endPinElement = document.createElement("span");
 				endPinElement.classList.add("pin");
+				endPinElement.setAttribute('copyleaks-extra', '');
 				endPinElement.id = Date.now().toString();
 				endPinElement.onclick = () => { }
-				range.endContainer.parentElement.after(endPinElement);
 
-				var start = document.documentElement.innerHTML.trim().indexOf(endPinElement.id) + endPinElement.id.length + 2;
-				var end = start + endPinElement.innerHTML.trim().length;
-				console.log(`Start: ${start}`);
-				console.log(`End: ${end}`);
-				console.log(`text: ${sel.toString()}`);
+				console.log(range);
+
+				range.endContainer.parentElement.appendChild(endPinElement);
+
+				let htmlStart = document.documentElement.innerHTML.trim().indexOf(endPinElement.id) - 41;
+				let htmlEnd = htmlStart + endPinElement.innerHTML.trim().length;
+
+				messageParent({ type: 'conversation-select', id: endPinElement.id, start: htmlStart, end: htmlEnd, html: document.documentElement.innerHTML });
 			}
 			btnCreateConversationEle.style.display = "none";
 		}
 	}
+	//#endregion conversations handlers
 
 	/**
 	 * Message event handler

@@ -22,6 +22,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 		disableSuspectBackButton: false,
 		contentMode: 'text',
 	};
+	requestDelay = 0;
 
 	constructor(
 		private router: Router,
@@ -93,7 +94,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 			.downloadedSource(scanId)
 			.pipe(
 				takeUntil(destroy$),
-				delay(5000),
+				delay(this.requestDelay),
 				retry(3)
 			)
 			.subscribe(source => this.copyleaksService.pushDownloadedSource(source));
@@ -102,7 +103,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 			.completeResult(scanId)
 			.pipe(
 				takeUntil(destroy$),
-				delay(5000),
+				delay(this.requestDelay),
 				retry(3)
 			)
 			.subscribe(result => this.copyleaksService.pushCompletedResult(result));
@@ -111,7 +112,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 			.completeResult(scanId)
 			.pipe(
 				takeUntil(destroy$),
-				delay(5000)
+				delay(this.requestDelay)
 			)
 			.subscribe(({ results }) => {
 				zip(from(results.internet), interval(500))
@@ -195,7 +196,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 							this.resultsService.newResult(meta.scannedDocument.scanId, id).pipe(
 								takeUntil(destroy$),
 								retry(5),
-								delay(5000),
+								delay(this.requestDelay),
 								map(result => ({ id: id, result: { ...result, component: this.useResultComponent() ? ScanResultComponent : null } } as ResultItem)),
 								catchError(() => of({ id: id, result: null }))
 							).subscribe(res => {
@@ -213,7 +214,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 					this.resultsService.newResult(meta.scannedDocument.scanId, item.id).pipe(
 						takeUntil(destroy$),
 						retry(5),
-						delay(5000),
+						delay(this.requestDelay),
 						map(result => ({ id: item.id, result: { ...result, component: this.useResultComponent() ? ScanResultComponent : null } } as ResultItem)),
 						catchError(() => of({ id: item.id, result: null }))
 					)

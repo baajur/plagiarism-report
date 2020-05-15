@@ -8,6 +8,10 @@
 	.t {
 		pointer-events: all !important;
 	}
+	.pin {
+		width: 20px !important;
+		height: 20px !important;
+	}
 }
 span[exclude] {
 	font-style: italic;

@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/co
 import { combineLatest } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { untilDestroy } from '../../../shared/operators/untilDestroy';
-import { MatchJumpEvent, MatchSelectEvent } from '../../models';
+import { MatchJumpEvent, MatchSelectEvent, MatchType } from '../../models';
 import { HighlightService } from '../../services/highlight.service';
 import { MatchService } from '../../services/match.service';
 import { ReportService } from '../../services/report.service';
@@ -64,7 +64,29 @@ export class OriginalHtmlHelperComponent extends HtmlHelperBase implements OnIni
 			.pipe(untilDestroy(this))
 			.subscribe(([, matches]) => {
 				this.matches = matches;
-				this.renderMatches(matches);
+
+				// this.matches.push({
+				// 	start: 83,
+				// 	end: 83,
+				// 	gid: 1232132132,
+				// 	type: MatchType.conversation
+				// })
+
+				// this.matches.push({
+				// 	start: 474,
+				// 	end: 474,
+				// 	gid: 1232132132,
+				// 	type: MatchType.conversation
+				// })
+
+				// this.matches.push({
+				// 	start: 302,
+				// 	end: 474,
+				// 	gid: 1232132132,
+				// 	type: MatchType.conversation
+				// })
+
+				this.renderMatches(this.matches.sort((a, b) => a.start - b.start));
 			});
 		const onOneToManyHtmlJump$ = combineLatest([jump$, viewMode$, contentMode$]).pipe(
 			untilDestroy(this),
@@ -78,5 +100,5 @@ export class OriginalHtmlHelperComponent extends HtmlHelperBase implements OnIni
 	 * Life-cycle method
 	 * empty for `untilDestroy` rxjs operator
 	 */
-	ngOnDestroy() {}
+	ngOnDestroy() { }
 }
